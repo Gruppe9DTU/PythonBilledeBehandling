@@ -1,8 +1,6 @@
-import os, time, threading, socket
-import numpy as np
-import cv2
+import os, time, threading, socket, cv2
 
-HOST = '192.168.0.18'
+HOST = '192.168.0.51'
 PORT = 8888
 
 def getImage():
@@ -37,11 +35,14 @@ def imageReq(img):
 
 def initClassifier():
     global cascade
-    cascade = cv2.CascadeClassifier('cascade.xml')
+    cascade = cv2.CascadeClassifier('cascade_6.xml')
 
 
 
 
 if __name__ == "__main__":
-    initClassifier
-    getImage
+    initClassifier()
+    while(True):
+        getImage()
+    
+    
