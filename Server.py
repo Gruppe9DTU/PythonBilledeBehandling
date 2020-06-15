@@ -1,57 +1,52 @@
-import time, threading, socket, cv2, numpy as np
+import time, sys, threading, socket, cv2, numpy as np
 
 HOST = '192.168.0.51'
 PORT = 8888
 
-def getImage():
-    with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
-        s.bind((HOST, PORT))
-        s.listen()
-        print("Waiting for connection")
-        conn,addr = s.accept()
-        newData = bytearray()
-        with conn:
-            print('Connected by', addr)
-            while True:
-                sizeOfData = conn.recv(1024)
-                #sizeOfData = int.from_bytes(sizeOfData,byteorder='big')
-                #print("Indhold: "+sizeOfData)
-                while len(newData) < int(sizeOfData):
-                    packet = conn.recv(int(sizeOfData) - len(newData))
-                    if not packet:
-                        continue
-                    newData.extend(packet)
-                #newData = conn.recv(48000000)
-                #mat = np.array(newData)
-                #mat=list(newData)
-                for x in range(20):
-                    print(newData[x])
+def getImage(conn):
+    newData = bytearray()
+    print("Waiting for data...")
+    sizeOfData = None
+    sizeOfData = conn.recv(1024)
+    if sizeOfData:
+        while len(newData) < int(sizeOfData):
+            packet = conn.recv(int(sizeOfData) - len(newData))
+            if not packet:
+                continue
+            newData.extend(packet)
+            
+        nparr = np.frombuffer(newData, np.uint8)
 
-                
-                nparr = np.frombuffer(newData, np.uint8)#.reshape(3000, 4000)
-                #print(nparr.size)
-                mat = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-                imS = cv2.resize(mat, (960, 540))
-                
-                if not (np.array_equal(mat,None)):
-                #if not mat is None and mat != '':
-                    cv2.imshow("Test",imS)
-                    imageReq(mat)
+        mat = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        imS = cv2.resize(mat, (960, 540))
+        
+        if not (np.array_equal(mat,None)):
+        #if not mat is None and mat != '':
+            #cv2.imshow("Test",imS)
+            #cv2.waitKey(2)
+            conn.send(str(imageReq(mat))).encode('utf-8')
+            
+    else:
+        print("Connection lost")
+        sys.exit(0)
 
 
 def imageReq(img):
     global cascade
-    c = cascade.detectMultiScale(img)
-    
+    c = cascade.detectMultiScale(img,1.01)
+    #print(c)
+    #print(np.reshape(c, -1))
     for (x,y,w,h) in c:
         print("tal")
         cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
-        cv2.imshow('img',img)
+        result = cv2.resize(img, (960, 540))
+        cv2.imshow('img',result)
     
     while 1:
-        k = cv2.waitKey(30) & 0xff
-        if k == 27:
+        if cv2.waitKey(0) & 0xFF == ord('q'):
             break
+    
+    return c
 
 
 def initClassifier():
@@ -59,9 +54,14 @@ def initClassifier():
     cascade = cv2.CascadeClassifier('cascade_6.xml')
 
 
-
-
 if __name__ == "__main__":
     initClassifier()
-    while(True):
-        getImage()
+    with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
+        s.bind((HOST, PORT))
+        s.listen()
+        print("Waiting for connection")
+        conn,addr = s.accept()
+        with conn:
+            print('Connected by', addr)
+            while(True):
+                getImage(conn)
