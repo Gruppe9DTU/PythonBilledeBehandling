@@ -1,7 +1,7 @@
 import time, sys, threading, socket, cv2, numpy as np
 
 HOST = '192.168.0.51'
-PORT = 8888
+PORT = 8889
 
 def getImage(conn):
     newData = bytearray()
@@ -24,7 +24,10 @@ def getImage(conn):
         #if not mat is None and mat != '':
             #cv2.imshow("Test",imS)
             #cv2.waitKey(2)
-            conn.send(str(imageReq(mat))).encode('utf-8')
+            test = str(imageReq(mat))
+            conn.send(test.encode('utf-8'))
+            conn.send("\n".encode('utf-8'))
+            print(test)
             
     else:
         print("Connection lost")
@@ -46,7 +49,7 @@ def imageReq(img):
         if cv2.waitKey(0) & 0xFF == ord('q'):
             break
     
-    return c
+    return np.concatenate(c, axis=None)
 
 
 def initClassifier():
