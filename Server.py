@@ -1,4 +1,4 @@
-import time, threading, socket, cv2, numpy as np
+import socket, cv2, numpy as np
 import cardDetect as cd
 
 HOST = '192.168.0.51'
