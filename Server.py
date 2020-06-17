@@ -1,7 +1,8 @@
 import time, sys, threading, socket, cv2, numpy as np
+import cardDetect as cd
 
-HOST = '192.168.0.51'
-PORT = 8889
+HOST = '192.168.0.27'
+PORT = 8888
 
 def getImage(conn):
     newData = bytearray()
@@ -24,7 +25,7 @@ def getImage(conn):
         #if not mat is None and mat != '':
             #cv2.imshow("Test",imS)
             #cv2.waitKey(2)
-            test = str(imageReq(mat))
+            test = str(cd.find(mat))
             conn.send(test.encode('utf-8'))
             conn.send("\n".encode('utf-8'))
             print(test)
@@ -58,7 +59,7 @@ def initClassifier():
 
 
 if __name__ == "__main__":
-    initClassifier()
+    #initClassifier()
     with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
         s.bind((HOST, PORT))
         s.listen()
