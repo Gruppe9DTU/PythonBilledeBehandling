@@ -2,7 +2,7 @@ import time, sys, threading, socket, cv2, numpy as np
 import cardDetect as cd
 
 HOST = '192.168.0.51'
-PORT = 8888
+PORT = 8889
 
 def getImage(conn):
     newData = bytearray()
@@ -25,13 +25,11 @@ def getImage(conn):
             result = cd.find(mat)
             
             if result != []:
-                test = str(np.concatenate(result, axis=None))
+                test = str(np.concatenate(result, axis=None))+"\n"
                 conn.send(test.encode('utf-8'))
-                conn.send("\n".encode('utf-8'))
                 print(test)
             else:
-                conn.send("[]".encode('utf-8'))
-                conn.send("\n".encode('utf-8'))
+                conn.send("[]\n".encode('utf-8'))
             
     else:
         print("Connection lost")
