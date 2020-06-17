@@ -20,7 +20,7 @@ numlist.append([cv2.CascadeClassifier('cascade_6.xml'),6])
 def findtype(img):
     r=0
     for (cas,i) in typelist:
-        c=cas.detectMultiScale(img,1.001)
+        c=cas.detectMultiScale(img,1.01)
         if r==0 and len(c)!=0: r=i              #If no former result and detection, r is of this type
         elif r!=0 and len(c)!=0: print("ERROR") #If former result and current detection, r is of debatable type
     return r

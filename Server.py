@@ -2,7 +2,7 @@ import time, sys, threading, socket, cv2, numpy as np
 import cardDetect as cd
 
 HOST = '192.168.0.27'
-PORT = 8888
+PORT = 8889
 
 def getImage(conn):
     newData = bytearray()
