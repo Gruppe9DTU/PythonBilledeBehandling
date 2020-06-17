@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 
 #Init lists of classifiers
 numlist = []
@@ -35,7 +36,7 @@ def find(img):
             t=findtype(img2)
             print(t)                        #Find type for the given value
             if t!=0: result.append([x,y,w,h,i,t])   #If type, then we have a card
-    return result
+    return np.concatenate(result, axis=None)
 
 
 #Test

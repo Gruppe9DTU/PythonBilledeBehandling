@@ -22,9 +22,6 @@ def getImage(conn):
         imS = cv2.resize(mat, (960, 540))
         
         if not (np.array_equal(mat,None)):
-        #if not mat is None and mat != '':
-            #cv2.imshow("Test",imS)
-            #cv2.waitKey(2)
             test = str(cd.find(mat))
             conn.send(test.encode('utf-8'))
             conn.send("\n".encode('utf-8'))
@@ -38,8 +35,6 @@ def getImage(conn):
 def imageReq(img):
     global cascade
     c = cascade.detectMultiScale(img,1.01)
-    #print(c)
-    #print(np.reshape(c, -1))
     for (x,y,w,h) in c:
         print("tal")
         cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
@@ -59,7 +54,6 @@ def initClassifier():
 
 
 if __name__ == "__main__":
-    #initClassifier()
     with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
         s.bind((HOST, PORT))
         s.listen()
