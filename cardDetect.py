@@ -31,15 +31,15 @@ def find(img):
     for (cas,i) in numlist:
         c=cas.detectMultiScale(img,1.01)
         for (x,y,w,h) in c:
-            img2 = img[y+h:y+h*3,x:x+w]             #Cut a piece of the card
+            img2 = img[y+h//2:y+h*2,x:x+w]          #Cut a piece of the card
             t=findtype(img2)                        #Find type for the given value
-            #print(t)                        
+            #print(t)
             if t!=0: result.append([x,y,w,h,i,t])   #If type, then we have a card
     return result
 
 
 #Test
-'''
+
 if __name__ == "__main__":
     img=cv2.imread("1.jpg")
     x,y,z = img.shape
