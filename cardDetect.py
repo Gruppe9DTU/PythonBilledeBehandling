@@ -9,9 +9,9 @@ for i in range(1,14):
 
 
 typelist.append([cv2.CascadeClassifier('Cascade/h.xml'), 1])
-typelist.append([cv2.CascadeClassifier('Cascade/k.xml'), 2])
-typelist.append([cv2.CascadeClassifier('Cascade/s.xml'), 3])
-typelist.append([cv2.CascadeClassifier('Cascade/r.xml'), 4])
+typelist.append([cv2.CascadeClassifier('Cascade/s.xml'), 2])
+typelist.append([cv2.CascadeClassifier('Cascade/r.xml'), 3])
+typelist.append([cv2.CascadeClassifier('Cascade/k.xml'), 4])
 
 
 
