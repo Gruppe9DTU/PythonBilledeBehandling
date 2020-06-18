@@ -4,15 +4,15 @@ import cv2
 numlist = []
 typelist = []
 for i in range(1,14):
-    cas = cv2.CascadeClassifier(str(i)+'.xml')
+    cas = cv2.CascadeClassifier('Cascade/'+str(i)+'.xml')
     if not cas.empty(): numlist.append([cas, i])
 
 
-typelist.append([cv2.CascadeClassifier('h.xml'), 1])
-#typelist.append([cv2.CascadeClassifier('k.xml'), 2])
-#typelist.append([cv2.CascadeClassifier('s.xml'), 3])
-#typelist.append([cv2.CascadeClassifier('r.xml'), 4])
-numlist.append([cv2.CascadeClassifier('cascade_6.xml'),6])
+typelist.append([cv2.CascadeClassifier('Cascade/h.xml'), 1])
+typelist.append([cv2.CascadeClassifier('Cascade/k.xml'), 2])
+typelist.append([cv2.CascadeClassifier('Cascade/s.xml'), 3])
+typelist.append([cv2.CascadeClassifier('Cascade/r.xml'), 4])
+
 
 
 #Find type of card
@@ -33,7 +33,7 @@ def find(img):
         for (x,y,w,h) in c:
             img2 = img[y+h:y+h*3,x:x+w]             #Cut a piece of the card
             t=findtype(img2)                        #Find type for the given value
-            print(t)                        
+            #print(t)                        
             if t!=0: result.append([x,y,w,h,i,t])   #If type, then we have a card
     return result
 
