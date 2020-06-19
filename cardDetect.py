@@ -14,15 +14,25 @@ typelist.append([cv2.CascadeClassifier('Cascade/r.xml'), 3])
 typelist.append([cv2.CascadeClassifier('Cascade/k.xml'), 4])
 
 
-
 #Find type of card
 def findtype(img):
     r=0
+    x,y = img.shape
+    img = cv2.resize(img,(int(y*2),int(x*2)))
     for (cas,i) in typelist:
         c=cas.detectMultiScale(img,1.01)
-        if r==0 and len(c)!=0: r=i              #If no former result and detection, r is of this type
-        elif r!=0 and len(c)!=0: print("ERROR") #If former result and current detection, r is of debatable type
+        if r==0 and len(c)!=0: r=i                       #If no former result and detection, r is of this type
+        elif r!=0 and len(c)!=0: print("Debatable suit") #If former result and current detection, r is of debatable type
     return r
+
+
+def imagesplit(img, r, c):
+    results=[]
+    y,x = img.shape
+    for i in range(r):
+        for j in range(c):
+            results.append(img[int(i*y/r):int(i*y/r+y/r),int(j*x/c):int(j*x/c+x/c)])
+    return results
 
 
 #Find card and value
