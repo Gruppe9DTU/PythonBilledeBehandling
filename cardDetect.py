@@ -48,13 +48,9 @@ def find(img):
 
 #Test
 
-#if __name__ == "__main__":
-#    img=cv2.imread("1.jpg")
-#    x,y,z = img.shape
-#    z = y/500
-#    img = cv2.resize(img,(int(y/z),int(x/z)))
-#    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-#    r=find(gray)
-#    print(r)
-#    print(len(r))
+if __name__ == "__main__":
+    img=cv2.imread("1.jpg",cv2.IMREAD_REDUCED_GRAYSCALE_8)
+    r=find(img)
+    print(r)
+    print(len(r))
     #'''
