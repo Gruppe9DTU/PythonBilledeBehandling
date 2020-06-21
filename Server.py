@@ -20,7 +20,7 @@ def getImage(conn):
         mat = cv2.imdecode(nparr, cv2.IMREAD_GRAYSCALE)
         
         if not (np.array_equal(mat,None)):
-            result = cd.find(mat)
+            result = cd.find(mat,2,2)
             
             if result != []:
                 test = str(np.concatenate(result, axis=None))+"\n"

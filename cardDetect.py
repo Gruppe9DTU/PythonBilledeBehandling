@@ -51,18 +51,18 @@ if __name__ == "__main__":
     img=cv2.imread("3.jpg")
     print(img.shape)
     img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-    r=find(img,10,10)
+    r=find(img,2,2)
     print(r)
     print(len(r))
     error=0
     for (x,y,w,h,i,j) in r:
         cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
         if j==0: error=error+1
-        #print(str(i)+"|"+str(j))
-        #cv2.imshow("1",img[y:y+h*3,x:x+w])
-        #cv2.waitKey()
+        print(str(i)+"|"+str(j))
+        cv2.imshow("1",img[y:y+h*3,x:x+w])
+        cv2.waitKey()
     print(error)
-    for im in imagesplit(img, 7, 5):
+    '''for im in imagesplit(img, 7, 4):
         cv2.imshow("1",im[0])
         cv2.waitKey()
     #'''
