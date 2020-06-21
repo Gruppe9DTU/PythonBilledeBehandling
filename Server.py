@@ -17,7 +17,7 @@ def getImage(conn):
         
         nparr = np.frombuffer(newData, np.uint8)
         
-        mat = cv2.imdecode(nparr, cv2.IMREAD_REDUCED_GRAYSCALE_8)
+        mat = cv2.imdecode(nparr, cv2.IMREAD_GRAYSCALE)
         
         if not (np.array_equal(mat,None)):
             result = cd.find(mat)
