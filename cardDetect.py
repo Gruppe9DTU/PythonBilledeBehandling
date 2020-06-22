@@ -2,7 +2,6 @@ import cv2
 
 #Init lists of classifiers
 typelist = []
-
 typelist.append([cv2.CascadeClassifier('Cascade/h.xml'), 1])
 typelist.append([cv2.CascadeClassifier('Cascade/s.xml'), 2])
 typelist.append([cv2.CascadeClassifier('Cascade/r.xml'), 3])
@@ -20,28 +19,30 @@ def findtype(img):
     return r
 
 
-def imagesplit(img, r=1, c=1):
+def imagesplit(img, row=1, col=1):
     results=[]
-    y,x = img.shape
-    for i in range(r):
-        for j in range(c):
-            results.append([img[int(i*y/r):int(i*y/r+y/r),int(j*x/c):int(j*x/c+x/c)],int(j*x/c),int(i*y/r)])
+    s = img.shape
+    y = s[0]//row
+    x = s[1]//col
+    for i in range(row):
+        for j in range(col):
+            results.append([img[i*y:i*y+y,j*x:j*x+x],j*x,i*y])
     return results
 
 
 #Find card and value
-def find(img, re=1, ce=1):
+def find(img, row=1, col=1):
     result=[]
-    tem = imagesplit(img, re ,ce)
+    split = imagesplit(img, row, col)
     for i in range(1,14):
         cas = cv2.CascadeClassifier('Cascade/'+str(i)+'.xml')
         if cas.empty(): continue
-        for (temp,j,k) in tem:
+        for (temp,j,k) in split:
             c=cas.detectMultiScale(temp,1.01,8)
             for (x,y,w,h) in c:
-                img2 = temp[y:y+h*3,x:x+w]  #Cut a piece of the card
-                t=findtype(img2)                        #Find type for the given value
-                result.append([x+j,y+k,w,h,i,t])        #If type, then we have a card
+                img2 = temp[y:y+h*3,x:x+w]          #Cut a piece of the card
+                t=findtype(img2)                    #Find type for the given value
+                result.append([x+j,y+k,w,h,i,t])    #If type, then we have a card
     cas = None
     return result
 
