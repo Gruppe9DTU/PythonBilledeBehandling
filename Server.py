@@ -23,9 +23,9 @@ def getImage(conn):
             result = cd.find(mat,2,2)
             
             if result != []:
+                print(str(result))
                 test = str(np.concatenate(result, axis=None))+"\n"
                 conn.send(test.encode('utf-8'))
-                print(test)
             else:
                 print("Nothing found")
                 conn.send("[]\n".encode('utf-8'))
