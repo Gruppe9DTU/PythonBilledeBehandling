@@ -42,9 +42,10 @@ def find(img, row=1, col=1):
         for (temp,j,k) in split:
             c=cas.detectMultiScale(temp,1.01,8)
             for (x,y,w,h) in c:
-                img2 = temp[y:y+h*3,x:x+w]          #Cut a piece of the card
-                t=findtype(img2)                    #Find type for the given value
-                result.append([x+j,y+k,w,h,i,t])    #If type, then we have a card
+                img2 = temp[y:y+h*3,x:x+w]                  #Cut a piece of the card
+                t=findtype(img2)
+                if t != 0:                               #Find type for the given value
+                    result.append([x+j,y+k,w,h,i,t])        #If type, then we have a card
     cas = None
     return result
 

@@ -5,6 +5,7 @@ HOST = '192.168.0.51'
 PORT = 8888
 
 def getImage(conn):
+    global connectionActive
     newData = bytearray()
     print("Waiting for data...")
     sizeOfData = conn.recv(1024)
@@ -29,19 +30,38 @@ def getImage(conn):
             else:
                 print("Nothing found")
                 conn.send("[]\n".encode('utf-8'))
+        
+        connectionActive = True
 
     else:
-        print("Connection lost")
-        exit()
+        conn.close()
+        conn = None
 
+        print("Connection lost. Waiting for new connection.")
+
+        connectionActive = False
+        
 
 if __name__ == "__main__":
+    conn = None
     with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         s.bind((HOST, PORT))
         s.listen()
         print("Waiting for connection")
-        conn,addr = s.accept()
-        with conn:
-            print('Connected by', addr)
-            while(True):
-                getImage(conn)
+        while True:
+            try:
+                conn,addr = s.accept()
+                connectionActive = True
+                with conn:
+                    print('Connected by', addr)
+                    while connectionActive:
+                        getImage(conn)
+
+            except KeyboardInterrupt:
+                s.close()
+                exit()
+            
+            except OSError:
+                conn.close()
+                conn = None
