@@ -12,23 +12,21 @@ def findtype(img):
     r=0
     cur=0   #Increase for higher requirements for detection
     x = img.shape
-    if x[1]>150: y=1.01
-    else: y=1.001
 
-    #----------EXPERIMENTAL----------
+    #----------Suit enhancer----------
     thresh, img = cv2.threshold(img, 150, 255, cv2.THRESH_BINARY)
     img = cv2.resize(img,(int(x[1]*2),int(x[0]*2)))
     
     for (cas,i) in typelist:
-        c=cas.detectMultiScale(img,y,0)
+        c=cas.detectMultiScale(img,1.001,0)
         if len(c)>cur:                    #If this type has the most detections, r is of this type
             cur=len(c)
             r=i
-        elif len(c)==cur and len(c)!=0:   #If this type has the the same amount of detections as the current type, r is debatable
-            r=5 #TODO Only needed if we add support
+        '''elif len(c)==cur and len(c)!=0:   #If this type has the the same amount of detections as the current type, r is debatable
+            r=5 #TODO Only needed if we add support as it will almost never happen'''
     return r
 
-
+#Splits the image to lessen memory load on detectMultiScale
 def imagesplit(img, row=1, col=1):
     results=[]
     s = img.shape
@@ -53,9 +51,9 @@ def find(img, row=1, col=1):
                 if i==0:
                     result.append([x+j,y+k,w,h,i,0])
                     continue
-                img2 = temp[y:y+h*2,x:x+w+w//4]          #Cut a piece of the card
-                t=findtype(img2)                    #Find type for the given value
-                if t!=0: result.append([x+j,y+k,w,h,i,t])    #If type, then we have a card
+                img2 = temp[y+h//2:y+h*3,x-w//4:x+w+w//4]   #Cut a piece of the card
+                t=findtype(img2)                            #Find type for the given value
+                if t!=0: result.append([x+j,y+k,w,h,i,t])   #No type, no card
     cas = None
     return result
 
@@ -77,11 +75,11 @@ if __name__ == "__main__":
             hid=hid+1
         if j==5: deb=deb+1
         print(str(i)+"|"+str(j))
-    '''    cv2.imshow("1",img[y:y+h*3,x:x+w])
+        cv2.imshow("1",img[y+h//2:y+h*3,x-w//4:x+w+w//4])
         cv2.waitKey()#'''
     print(len(r))
     print(str(hid)+"|"+str(deb))
-    for im in imagesplit(img, 6, 4):
+    '''for im in imagesplit(img, 1, 2):
         cv2.imshow("1",im[0])
         cv2.waitKey()
     #'''
