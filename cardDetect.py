@@ -16,8 +16,8 @@ def findtype(img):
     else: y=1.001
 
     #----------EXPERIMENTAL----------
-    #thresh, img = cv2.threshold(img, 150, 255, cv2.THRESH_BINARY)
-    #img = cv2.resize(img,(int(x[1]*2),int(x[0]*2)))
+    thresh, img = cv2.threshold(img, 150, 255, cv2.THRESH_BINARY)
+    img = cv2.resize(img,(int(x[1]*2),int(x[0]*2)))
     
     for (cas,i) in typelist:
         c=cas.detectMultiScale(img,y,0)
