@@ -10,14 +10,22 @@ typelist.append([cv2.CascadeClassifier('Cascade/k.xml'), 4])
 #Find type of card
 def findtype(img):
     r=0
+    cur=0   #Increase for higher requirements for detection
     x = img.shape
-    if x[1]>150: x=1.01
-    else: x=1.001
-    #img = cv2.resize(img,(int(y*2),int(x*2)))
+    if x[1]>150: y=1.01
+    else: y=1.001
+
+    #----------EXPERIMENTAL----------
+    #thresh, img = cv2.threshold(img, 150, 255, cv2.THRESH_BINARY)
+    #img = cv2.resize(img,(int(x[1]*2),int(x[0]*2)))
+    
     for (cas,i) in typelist:
-        c=cas.detectMultiScale(img,x)
-        if r==0 and len(c)!=0: r=i                       #If no former result and detection, r is of this type
-        elif r!=0 and len(c)!=0: print("Debatable suit") #If former result and current detection, r is of debatable type
+        c=cas.detectMultiScale(img,y,0)
+        if len(c)>cur:                    #If this type has the most detections, r is of this type
+            cur=len(c)
+            r=i
+        elif len(c)==cur and len(c)!=0:   #If this type has the the same amount of detections as the current type, r is debatable
+            r=5 #TODO Only needed if we add support
     return r
 
 
@@ -36,37 +44,44 @@ def imagesplit(img, row=1, col=1):
 def find(img, row=1, col=1):
     result=[]
     split = imagesplit(img, row, col)
-    for i in range(1,14):
+    for i in range(14):
         cas = cv2.CascadeClassifier('Cascade/'+str(i)+'.xml')
         if cas.empty(): continue
         for (temp,j,k) in split:
-            c=cas.detectMultiScale(temp,1.01,8)
+            c=cas.detectMultiScale(temp,1.01,7,0,(10,10),(90,90))
             for (x,y,w,h) in c:
-                img2 = temp[y:y+h*3,x:x+w]                  #Cut a piece of the card
-                t=findtype(img2)
-                if t != 0:                               #Find type for the given value
-                    result.append([x+j,y+k,w,h,i,t])        #If type, then we have a card
+                if i==0:
+                    result.append([x+j,y+k,w,h,i,0])
+                    continue
+                img2 = temp[y:y+h*2,x:x+w+w//4]          #Cut a piece of the card
+                t=findtype(img2)                    #Find type for the given value
+                if t!=0: result.append([x+j,y+k,w,h,i,t])    #If type, then we have a card
     cas = None
     return result
 
 
 #Test
 if __name__ == "__main__":
-    img=cv2.imread("1.jpg")
+    img=cv2.imread("3.jpg")
     print(img.shape)
     img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
     r=find(img,2,2)
     print(r)
-    print(len(r))
-    error=0
+    hid=0
+    deb=0
+    #thresh, img = cv2.threshold(img, 140, 255, cv2.THRESH_BINARY)
     for (x,y,w,h,i,j) in r:
-        cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
-    '''    if j==0: error=error+1
+        cv2.rectangle(img,(x,y),(x+w,y+h),(155,0,0),2)
+        if j==0: 
+            #print("-"+str(i))
+            hid=hid+1
+        if j==5: deb=deb+1
         print(str(i)+"|"+str(j))
-        cv2.imshow("1",img[y:y+h*3,x:x+w])
+    '''    cv2.imshow("1",img[y:y+h*3,x:x+w])
         cv2.waitKey()#'''
-    print(error)
-    for im in imagesplit(img, 7, 4):
+    print(len(r))
+    print(str(hid)+"|"+str(deb))
+    for im in imagesplit(img, 6, 4):
         cv2.imshow("1",im[0])
         cv2.waitKey()
     #'''
