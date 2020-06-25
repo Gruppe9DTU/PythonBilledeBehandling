@@ -47,7 +47,7 @@ def find(img, row=1, col=1):
         cas = cv2.CascadeClassifier('Cascade/'+str(i)+'.xml')
         if cas.empty(): continue
         for (temp,j,k) in split:
-            c=cas.detectMultiScale(temp,1.01,7,0,(10,10),(90,90))
+            c=cas.detectMultiScale(temp,1.01,7,0,(15,15),(90,90))
             for (x,y,w,h) in c:
                 if i==0:
                     result.append([x+j,y+k,w,h,i,0])
