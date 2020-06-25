@@ -12,7 +12,8 @@ def findtype(img):
     r=0
     cur=0   #Increase for higher requirements for detection
     x = img.shape
-
+    if img is None: return 0
+    
     #----------Suit enhancer----------
     thresh, img = cv2.threshold(img, 150, 255, cv2.THRESH_BINARY)
     img = cv2.resize(img,(int(x[1]*2),int(x[0]*2)))
