@@ -15,7 +15,7 @@ def getImage(conn):
                 continue
             newData.extend(packet)
         
-        nparr = np.frombuffer(newData, np.uint8) # Get array from string.
+        nparr = np.frombuffer(newData, np.uint8) # Get numpy array from byte array.
         
         mat = cv2.imdecode(nparr, cv2.IMREAD_GRAYSCALE) # Decode array to matrix (image).
         
@@ -23,9 +23,9 @@ def getImage(conn):
             result = cd.find(mat,1,2) # Detect the cards
             
             if result != []:
-                print(str(result))
                 test = str(np.concatenate(result, axis=None))+"\n" # Make (maybe) multi-dimensional array to an one-dimensional array.
                 conn.send(test.encode('utf-8'))
+                print("Data has been send!")
             else:
                 print("Nothing found")
                 conn.send("[]\n".encode('utf-8')) # Send a message to the client containing an empty array.
@@ -42,7 +42,7 @@ def getImage(conn):
 
 if __name__ == "__main__":
     with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # Allow reuse of local address (solves the "address already in use" problem)
         s.bind((HOST, PORT))
         s.listen() # Listen for connections
         print("Waiting for connection")
