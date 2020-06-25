@@ -1,70 +1,64 @@
-import time, sys, threading, socket, cv2, numpy as np
+import socket, cv2, numpy as np
+import cardDetect as cd
 
 HOST = '192.168.0.51'
-PORT = 8889
+PORT = 8888
 
 def getImage(conn):
     newData = bytearray()
     print("Waiting for data...")
-    sizeOfData = None
-    sizeOfData = conn.recv(1024)
+    sizeOfData = conn.recv(1024) # Recieve a message containing the number of incoming bytes.
     if sizeOfData:
-        while len(newData) < int(sizeOfData):
+        while len(newData) < int(sizeOfData): # As long as we haven't recieved all of our data keep the loop running.
             packet = conn.recv(int(sizeOfData) - len(newData))
             if not packet:
                 continue
             newData.extend(packet)
-            
-        nparr = np.frombuffer(newData, np.uint8)
-
-        mat = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-        imS = cv2.resize(mat, (960, 540))
+        
+        nparr = np.frombuffer(newData, np.uint8) # Get numpy array from byte array.
+        
+        mat = cv2.imdecode(nparr, cv2.IMREAD_GRAYSCALE) # Decode array to matrix (image).
         
         if not (np.array_equal(mat,None)):
-        #if not mat is None and mat != '':
-            #cv2.imshow("Test",imS)
-            #cv2.waitKey(2)
-            test = str(imageReq(mat))
-            conn.send(test.encode('utf-8'))
-            conn.send("\n".encode('utf-8'))
-            print(test)
+            result = cd.find(mat,1,2) # Detect the cards
             
+            if result != []:
+                test = str(np.concatenate(result, axis=None))+"\n" # Make (maybe) multi-dimensional array to an one-dimensional array.
+                conn.send(test.encode('utf-8'))
+                print("Data has been send!")
+            else:
+                print("Nothing found")
+                conn.send("[]\n".encode('utf-8')) # Send a message to the client containing an empty array.
+        
+        return True # The data transfer succeded and the connection is still alive.
+
     else:
-        print("Connection lost")
-        sys.exit(0)
+        conn.close()
 
+        print("Connection lost. Waiting for new connection.")
 
-def imageReq(img):
-    global cascade
-    c = cascade.detectMultiScale(img,1.01)
-    #print(c)
-    #print(np.reshape(c, -1))
-    for (x,y,w,h) in c:
-        print("tal")
-        cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
-        result = cv2.resize(img, (960, 540))
-        cv2.imshow('img',result)
-    
-    while 1:
-        if cv2.waitKey(0) & 0xFF == ord('q'):
-            break
-    
-    return np.concatenate(c, axis=None)
-
-
-def initClassifier():
-    global cascade
-    cascade = cv2.CascadeClassifier('cascade_6.xml')
-
+        return False # Lost connection to client
+        
 
 if __name__ == "__main__":
-    initClassifier()
     with socket.socket(socket.AF_INET,socket.SOCK_STREAM) as s:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # Allow reuse of local address (solves the "address already in use" problem)
         s.bind((HOST, PORT))
-        s.listen()
+        s.listen() # Listen for connections
         print("Waiting for connection")
-        conn,addr = s.accept()
-        with conn:
-            print('Connected by', addr)
-            while(True):
-                getImage(conn)
+        while True:
+            try:
+                conn,addr = s.accept() # Accept connection
+                connectionActive = True
+                
+                with conn:
+                    print('Connected by', addr)
+                    while connectionActive:
+                        connectionActive = getImage(conn) # Process the data from the client and change connectionActive depending on connection with client.
+
+            except KeyboardInterrupt:
+                s.close() # When user terminates the program remember to free the port.
+                exit()
+            
+            except OSError:
+                conn.close() # If client disconnects clean up.
