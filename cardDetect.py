@@ -57,30 +57,3 @@ def find(img, row=1, col=1):
                 if t!=0: result.append([x+j,y+k,w,h,i,t])   #No type, no card
     cas = None
     return result
-
-
-#Test
-if __name__ == "__main__":
-    img=cv2.imread("3.jpg")
-    print(img.shape)
-    img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-    r=find(img,2,2)
-    print(r)
-    hid=0
-    deb=0
-    #thresh, img = cv2.threshold(img, 140, 255, cv2.THRESH_BINARY)
-    for (x,y,w,h,i,j) in r:
-        cv2.rectangle(img,(x,y),(x+w,y+h),(155,0,0),2)
-        if j==0: 
-            #print("-"+str(i))
-            hid=hid+1
-        if j==5: deb=deb+1
-        print(str(i)+"|"+str(j))
-        cv2.imshow("1",img[y+h//2:y+h*3,x-w//4:x+w+w//4])
-        cv2.waitKey()#'''
-    print(len(r))
-    print(str(hid)+"|"+str(deb))
-    '''for im in imagesplit(img, 1, 2):
-        cv2.imshow("1",im[0])
-        cv2.waitKey()
-    #'''
